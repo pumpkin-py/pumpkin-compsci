@@ -1,0 +1,35 @@
+msgid Available languages
+msgstr
+
+msgid Language compilers
+msgstr
+
+msgid Critical error:
+msgstr
+
+msgid *This could mean WandBox is experiencing an outage, a network connection error has occured, or you provided a wrong request.*
+msgstr
+
+msgid API replied with:
+msgstr
+
+msgid No language or compiler found.
+msgstr
+
+msgid You must attach a code-block containing code to your message
+msgstr
+
+msgid Do you want to run compiler with the following code?
+msgstr
+
+msgid Compilation results
+msgstr
+
+msgid Output was too long. Click the `Compilation results` hyperlink to see the full output.
+msgstr
+
+msgid Program Output
+msgstr
+
+msgid Program Error
+msgstr

@@ -55,12 +55,12 @@ class Compiler(commands.Cog):
         for idx, lang in enumerate(self.languages):
             if idx % 24 == 0:
                 try:
-                    embeds.append(embed)
+                    embeds.append(embed)  # noqa F821
                 except Exception:
                     pass
                 embed = utils.discord.create_embed(
                     author=ctx.author,
-                    title=_(ctx, "Compiler languages"),
+                    title=_(ctx, "Available languages"),
                 )
             value = (
                 f"{len(lang['compilers'])} compilers"
@@ -84,12 +84,12 @@ class Compiler(commands.Cog):
         for idx, comp in enumerate(compilers):
             if idx % 24 == 0:
                 try:
-                    embeds.append(embed)
+                    embeds.append(embed)  # noqa F821
                 except Exception:
                     pass
                 embed = utils.discord.create_embed(
                     author=ctx.author,
-                    title=_(ctx, f"{language.title()} compilers"),
+                    title=_(ctx, "Language compilers"),
                     description=f"Templates available: `{lang['templates']}`",
                 )
             name = comp["name"] if idx > 0 else f"{comp['name']} (default)"
@@ -98,7 +98,9 @@ class Compiler(commands.Cog):
         embeds.append(embed)
         return embeds
 
-    async def _run_compiler(self, compiler, code, highlighter) -> Union[dict, None]:
+    async def _run_compiler(
+        self, ctx, compiler, code, highlighter
+    ) -> Union[dict, None]:
         params = {
             "compiler": compiler["name"],
             "code": code,
@@ -128,13 +130,15 @@ class Compiler(commands.Cog):
         except aiohttp.ClientResponseError as e:
             embed = self.create_embed(
                 author=ctx.message.author,
-                title="Critical error:",
-                color=config.color_error,
+                title=_(ctx, "Critical error:"),
+            )
+            flaky_wandbox = _(
+                ctx,
+                "*This could mean WandBox is experiencing an outage, a network connection error has occured, or you provided a wrong request.*",
             )
             embed.add_field(
-                name="API replied with:",
-                value=f"`{e.status} {e.message}`"
-                "\n*This could mean WandBox is experiencing an outage, a network connection error has occured, or you provided a wrong request.*",
+                name=_(ctx, "API replied with:"),
+                value=f"`{e.status} {e.message}`\n" + flaky_wandbox,
                 inline=False,
             )
 
@@ -233,7 +237,7 @@ class Compiler(commands.Cog):
                 None,
             )
             if not comp:
-                await ctx.reply("No language or compiler found.")
+                await ctx.reply(_(ctx, "No language or compiler found."))
                 return
         elif not comp and lang:
             comp = next(
@@ -252,15 +256,17 @@ class Compiler(commands.Cog):
         except AttributeError:
             embed = utils.discord.create_embed(
                 author=ctx.message.author,
-                title="Critical error:",
-                description="You must attach a code-block containing code to your message",
+                title=_(ctx, "Critical error:"),
+                description=_(
+                    ctx, "You must attach a code-block containing code to your message"
+                ),
             )
             await ctx.reply(embed=embed)
             return
 
         confirm_embed = utils.discord.create_embed(
             author=ctx.message.author,
-            title=f"Do you want to run {comp['display-name']} compiler with the following code?",
+            title=_(ctx, "Do you want to run compiler with the following code?"),
             description=f"```{highlighter}\n{code}```",
         )
         confirm_view = utils.ConfirmView(ctx, confirm_embed)
@@ -279,23 +285,32 @@ class Compiler(commands.Cog):
 
         result_embed = utils.discord.create_embed(
             author=ctx.message.author,
-            title="Compilation results",
+            title=_(ctx, "Compilation results"),
             description=f"Status: {result['status']}",
             url=result["url"],
         )
         stdout = discord.utils.escape_mentions(result["program_output"])
         stderr = discord.utils.escape_mentions(result["program_error"])
 
+        output_long = _(
+            ctx,
+            "Output was too long. Click the `Compilation results` hyperlink to see the full output.",
+        )
+
         if len(stdout) > 0:
             if len(stdout) > 1018:
                 stdout = stdout[:1018]
-                result_embed.description = "Output was too long. Click the `Compilation results` hyperlink to see the full output."
-            result_embed.add_field(name="Program Output", value=f"```{stdout}```")
+                result_embed.description = output_long
+            result_embed.add_field(
+                name=_(ctx, "Program Output"), value=f"```{stdout}```"
+            )
         if len(stderr) > 0:
             if len(stderr) > 1018:
                 stderr = stderr[:1018]
-                result_embed.description = "Output was too long. Click the `Compilation results` hyperlink to see the full output."
-            result_embed.add_field(name="Program Error", value=f"```{stderr}```")
+                result_embed.description = output_long
+            result_embed.add_field(
+                name=_(ctx, "Program Error"), value=f"```{stderr}```"
+            )
 
         await ctx.reply(embed=result_embed)
 

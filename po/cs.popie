@@ -1,0 +1,35 @@
+msgid Available languages
+msgstr Dostupné jazyky
+
+msgid Language compilers
+msgstr Kompilátory pro jazyk
+
+msgid Critical error:
+msgstr Kritický error:
+
+msgid *This could mean WandBox is experiencing an outage, a network connection error has occured, or you provided a wrong request.*
+msgstr *Toto může znamenat, že WandBox API není dostupné, nastal problém s internetovým připojením bota nebo byly poskytnuty špatné argumenty*
+
+msgid API replied with:
+msgstr API odpovědělo:
+
+msgid No language or compiler found.
+msgstr Nenalezen žádný jazyk nebo kompilátor.
+
+msgid You must attach a code-block containing code to your message
+msgstr Musíte přidat do zprávy code-block obsahující kód, který chcete spustit.
+
+msgid Do you want to run compiler with the following code?
+msgstr Chcete spustit kompilátor s následujícím kódem?
+
+msgid Compilation results
+msgstr Výsledky kompilace
+
+msgid Output was too long. Click the `Compilation results` hyperlink to see the full output.
+msgstr Výstup byl moc dlouhý. Klikněte na odkaz `Výsledky kompilace` pro zobrazení celého výstupu.
+
+msgid Program Output
+msgstr Výstup programu
+
+msgid Program Error
+msgstr Chyba programu
