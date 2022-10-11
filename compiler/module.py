@@ -54,10 +54,8 @@ class Compiler(commands.Cog):
         embeds = []
         for idx, lang in enumerate(self.languages):
             if idx % 24 == 0:
-                try:
+                if idx != 0:
                     embeds.append(embed)  # noqa F821
-                except Exception:
-                    pass
                 embed = utils.discord.create_embed(
                     author=ctx.author,
                     title=_(ctx, "Available languages"),
@@ -73,20 +71,33 @@ class Compiler(commands.Cog):
 
     def _create_language_info_embeds(self, ctx, language) -> List[discord.Embed]:
         embeds = []
-        compilers = [
-            elem
-            for elem in self.compilers
-            if elem["language"].lower() == language.lower()
+        comps = [
+            x
+            for x in self.compilers
+            if language.lower()
+            in [
+                x["language"].lower(),
+                x["language"].split(" ")[0].lower(),
+                x["language"].replace(" ", "").lower(),
+            ]
         ]
         lang = next(
-            item for item in self.languages if item["name"].lower() == language.lower()
+            (
+                x
+                for x in self.languages
+                if language.lower()
+                in [
+                    x["name"].lower(),
+                    x["name"].split(" ")[0].lower(),
+                    x["name"].replace(" ", "").lower(),
+                ]
+            ),
+            None,
         )
-        for idx, comp in enumerate(compilers):
+        for idx, comp in enumerate(comps):
             if idx % 24 == 0:
-                try:
+                if idx != 0:
                     embeds.append(embed)  # noqa F821
-                except Exception:
-                    pass
                 embed = utils.discord.create_embed(
                     author=ctx.author,
                     title=_(ctx, "Language compilers"),
@@ -143,7 +154,7 @@ class Compiler(commands.Cog):
             )
 
             await ctx.send(embed=embed)
-            return
+            return None
         return dic
 
     @check.acl2(check.ACLevel.MEMBER)
@@ -224,7 +235,16 @@ class Compiler(commands.Cog):
             None,
         )
         lang = next(
-            (x for x in self.languages if comp_or_lang.lower() in x["name"].lower()),
+            (
+                x
+                for x in self.languages
+                if comp_or_lang.lower()
+                in [
+                    x["name"].lower(),
+                    x["name"].split(" ")[0].lower(),
+                    x["name"].replace(" ", "").lower(),
+                ]
+            ),
             None,
         )
         if not comp and not lang:
@@ -276,12 +296,10 @@ class Compiler(commands.Cog):
             return
 
         async with ctx.typing():
-            result = await self._run_compiler(comp, code, highlighter)
+            result = await self._run_compiler(ctx, comp, code, highlighter)
 
         if result is None:
             return
-
-        print(result)
 
         result_embed = utils.discord.create_embed(
             author=ctx.message.author,
