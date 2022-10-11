@@ -13,9 +13,6 @@ msgstr *Toto může znamenat, že WandBox API není dostupné, nastal problém s
 msgid API replied with:
 msgstr API odpovědělo:
 
-msgid No language was found.
-msgstr Jazyk nebyl nalezen.
-
 msgid No language or compiler found.
 msgstr Nenalezen žádný jazyk nebo kompilátor.
 
