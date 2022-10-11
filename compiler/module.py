@@ -15,10 +15,10 @@ class Compiler(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.compilers = []
-        self.languages = []
+        self.compilers: List[dict] = []
+        self.languages: List[dict] = []
 
-    async def _cog_update(self, ctx):
+    async def _cog_update(self, ctx: commands.Context):
         async with ctx.typing():
             async with aiohttp.ClientSession() as session:
                 async with session.get("https://wandbox.org/api/list.json") as response:
@@ -50,7 +50,7 @@ class Compiler(commands.Cog):
                         lang["templates"] = list(set(lang["templates"]))
             self.languages = sorted(languages, key=lambda d: d["name"])
 
-    def _create_language_embeds(self, ctx) -> List[discord.Embed]:
+    def _create_language_embeds(self, ctx: commands.Context) -> List[discord.Embed]:
         embeds = []
         for idx, lang in enumerate(self.languages):
             if idx % 24 == 0:
@@ -69,7 +69,9 @@ class Compiler(commands.Cog):
         embeds.append(embed)
         return embeds
 
-    def _create_language_info_embeds(self, ctx, language) -> List[discord.Embed]:
+    def _create_language_info_embeds(
+        self, ctx: commands.Context, language: str
+    ) -> List[discord.Embed]:
         embeds = []
         comps = [
             x
@@ -110,7 +112,7 @@ class Compiler(commands.Cog):
         return embeds
 
     async def _run_compiler(
-        self, ctx, compiler, code, highlighter
+        self, ctx: commands.Context, compiler: dict, code: str, highlighter: str
     ) -> Union[dict, None]:
         params = {
             "compiler": compiler["name"],
@@ -159,21 +161,21 @@ class Compiler(commands.Cog):
 
     @check.acl2(check.ACLevel.MEMBER)
     @commands.group(name="compiler")
-    async def compiler(self, ctx):
+    async def compiler(self, ctx: commands.Context):
         """Compiler information"""
         if ctx.invoked_subcommand is None:
             await ctx.send_help(ctx.command.qualified_name)
 
     @check.acl2(check.ACLevel.MEMBER)
     @compiler.group(name="language")
-    async def compiler_language(self, ctx):
+    async def compiler_language(self, ctx: commands.Context):
         """Compiler information"""
         if ctx.invoked_subcommand is None:
             await ctx.send_help(ctx.command.qualified_name)
 
     @check.acl2(check.ACLevel.MEMBER)
     @compiler_language.command(name="list")
-    async def compiler_language_list(self, ctx):
+    async def compiler_language_list(self, ctx: commands.Context):
         """List languages available to use with the compiler."""
         await self._cog_update(ctx)
 
@@ -184,7 +186,7 @@ class Compiler(commands.Cog):
 
     @check.acl2(check.ACLevel.MEMBER)
     @compiler_language.command(name="info")
-    async def compiler_language_info(self, ctx, language: str):
+    async def compiler_language_info(self, ctx: commands.Context, language: str):
         """List compilers available to use with the selected language.
 
         Args:
@@ -199,7 +201,7 @@ class Compiler(commands.Cog):
 
     @check.acl2(check.ACLevel.MEMBER)
     @compiler.command(name="template")
-    async def compiler_template(self, ctx, template: str):
+    async def compiler_template(self, ctx: commands.Context, template: str):
         """Get a template to start with.
 
         Args:
@@ -221,7 +223,7 @@ class Compiler(commands.Cog):
 
     @check.acl2(check.ACLevel.MEMBER)
     @commands.command(name="compile")
-    async def compiler_compile(self, ctx, comp_or_lang: str):
+    async def compiler_compile(self, ctx: commands.Context, comp_or_lang: str):
         """Get a template to start with.
 
         Args:
