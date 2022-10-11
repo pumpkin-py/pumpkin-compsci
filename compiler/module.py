@@ -71,7 +71,7 @@ class Compiler(commands.Cog):
 
     def _create_language_info_embeds(
         self, ctx: commands.Context, language: str
-    ) -> List[discord.Embed]:
+    ) -> Union[List[discord.Embed], None]:
         embeds = []
         comps = [
             x
@@ -96,6 +96,8 @@ class Compiler(commands.Cog):
             ),
             None,
         )
+        if comps == [] or lang is None:
+            return []
         for idx, comp in enumerate(comps):
             if idx % 24 == 0:
                 if idx != 0:
@@ -187,6 +189,8 @@ class Compiler(commands.Cog):
         await self._cog_update(ctx)
 
         embeds = self._create_language_info_embeds(ctx, language)
+        if embeds == []:
+            await ctx.reply(_(ctx, "No language was found."))
         scrollable_embed = utils.ScrollableEmbed(ctx, embeds)
 
         await scrollable_embed.scroll()
