@@ -22,6 +22,12 @@ msgstr Musíte přidat do zprávy code-block obsahující kód, který chcete sp
 msgid Do you want to run compiler with the following code?
 msgstr Chcete spustit kompilátor s následujícím kódem?
 
+msgid Note
+msgstr Poznmka
+
+msgid The first line of the code block is never sent to the compiler because that's where syntax highlighting should be.
+msgstr První řádek code blocku se kompilátoru neposílá, protože tam má být string pro zvýraznění syntaxe.
+
 msgid Compilation results
 msgstr Výsledky kompilace
 
@@ -33,3 +39,6 @@ msgstr Výstup programu
 
 msgid Program Error
 msgstr Chyba programu
+
+msgid Compiler Error
+msgstr Chyba kompilátoru

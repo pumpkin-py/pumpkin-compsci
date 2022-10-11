@@ -103,7 +103,7 @@ class Compiler(commands.Cog):
                 embed = utils.discord.create_embed(
                     author=ctx.author,
                     title=_(ctx, "Language compilers"),
-                    description=f"Templates available: `{lang['templates']}`",
+                    description=f"Templates available: `{'`, `'.join(lang['templates'])}`",
                 )
             name = comp["name"] if idx > 0 else f"{comp['name']} (default)"
             value = f"Version: {comp['version']}"
@@ -112,7 +112,7 @@ class Compiler(commands.Cog):
         return embeds
 
     async def _run_compiler(
-        self, ctx: commands.Context, compiler: dict, code: str, highlighter: str
+        self, ctx: commands.Context, compiler: dict, code: str
     ) -> Union[dict, None]:
         params = {
             "compiler": compiler["name"],
@@ -132,14 +132,6 @@ class Compiler(commands.Cog):
                     dic = await response.json()
             if "signal" in dic:
                 dic["status"] = dic["signal"]
-                return dic
-            elif dic["status"] != "0":
-                params["code"] = f"{highlighter}\n{code}"
-                async with aiohttp.ClientSession(raise_for_status=True) as session:
-                    async with session.post(
-                        "https://wandbox.org/api/compile.json", data=json.dumps(params)
-                    ) as response:
-                        dic = await response.json()
         except aiohttp.ClientResponseError as e:
             embed = self.create_embed(
                 author=ctx.message.author,
@@ -272,9 +264,8 @@ class Compiler(commands.Cog):
             )
         message = ctx.message
         try:
-            reg_result = re.search(r"\`\`\`([^\n]+)?([^\`]*)\`\`\`", message.content)
+            reg_result = re.search(r"\`\`\`(.*)\n?([^\`]*)\`\`\`", message.content)
             code = reg_result.group(2)
-            highlighter = reg_result.group(1)
         except AttributeError:
             embed = utils.discord.create_embed(
                 author=ctx.message.author,
@@ -289,7 +280,14 @@ class Compiler(commands.Cog):
         confirm_embed = utils.discord.create_embed(
             author=ctx.message.author,
             title=_(ctx, "Do you want to run compiler with the following code?"),
-            description=f"```{highlighter}\n{code}```",
+            description=f"```{code}```",
+        )
+        confirm_embed.add_field(
+            name=_(ctx, "Note"),
+            value=_(
+                ctx,
+                "The first line of the code block is never sent to the compiler because that's where syntax highlighting should be.",
+            ),
         )
         confirm_view = utils.ConfirmView(ctx, confirm_embed)
         result = await confirm_view.send()
@@ -298,7 +296,7 @@ class Compiler(commands.Cog):
             return
 
         async with ctx.typing():
-            result = await self._run_compiler(ctx, comp, code, highlighter)
+            result = await self._run_compiler(ctx, comp, code)
 
         if result is None:
             return
@@ -311,6 +309,7 @@ class Compiler(commands.Cog):
         )
         stdout = discord.utils.escape_mentions(result["program_output"])
         stderr = discord.utils.escape_mentions(result["program_error"])
+        prgerr = discord.utils.escape_mentions(result["compiler_error"])
 
         output_long = _(
             ctx,
@@ -330,6 +329,13 @@ class Compiler(commands.Cog):
                 result_embed.description = output_long
             result_embed.add_field(
                 name=_(ctx, "Program Error"), value=f"```{stderr}```"
+            )
+        if len(prgerr) > 0:
+            if len(prgerr) > 1018:
+                prgerr = prgerr[:1018]
+                result_embed.description = output_long
+            result_embed.add_field(
+                name=_(ctx, "Compiler Error"), value=f"```{prgerr}```"
             )
 
         await ctx.reply(embed=result_embed)

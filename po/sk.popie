@@ -22,6 +22,12 @@ msgstr
 msgid Do you want to run compiler with the following code?
 msgstr
 
+msgid Note
+msgstr
+
+msgid The first line of the code block is never sent to the compiler because that's where syntax highlighting should be.
+msgstr
+
 msgid Compilation results
 msgstr
 
@@ -32,4 +38,7 @@ msgid Program Output
 msgstr
 
 msgid Program Error
+msgstr
+
+msgid Compiler Error
 msgstr
