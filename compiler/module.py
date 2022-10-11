@@ -215,8 +215,10 @@ class Compiler(commands.Cog):
 
     @check.acl2(check.ACLevel.MEMBER)
     @commands.command(name="compile")
-    async def compiler_compile(self, ctx: commands.Context, comp_or_lang: str):
-        """Get a template to start with.
+    async def compiler_compile(
+        self, ctx: commands.Context, comp_or_lang: str, *, code_block: str
+    ):
+        """Compiles your shitty code
 
         Args:
             comp_or_lang (str): Either a language (that uses the default compiler) or an exact compiler to use.
@@ -262,9 +264,8 @@ class Compiler(commands.Cog):
                 ),
                 None,
             )
-        message = ctx.message
         try:
-            reg_result = re.search(r"\`\`\`(.*)\n?([^\`]*)\`\`\`", message.content)
+            reg_result = re.search(r"\`\`\`(.*)\n?([^\`]*)\`\`\`", code_block)
             code = reg_result.group(2)
         except AttributeError:
             embed = utils.discord.create_embed(
